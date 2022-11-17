@@ -4,8 +4,8 @@
 set user=Quicksilver
 set password=Episerver15
 
-set cms_db=Quicksilver.Cms_13.27
-set commerce_db=Quicksilver.Commerce_13.27
+set cms_db=Quicksilver.Cms
+set commerce_db=Quicksilver.Commerce
 
 set sql=sqlcmd -S . -E
 
