@@ -2,12 +2,26 @@
 @echo off
 
 set user=Quicksilver
-set password=Episerver15
+set password=Episerver15!
 
 set cms_db=Quicksilver.Cms
 set commerce_db=Quicksilver.Commerce
 
 set sql=sqlcmd -S . -E
+
+:: Setup User
+echo Dropping user...
+%sql% -Q "if exists (select loginname from master.dbo.syslogins where name = '%user%') EXEC sp_droplogin @loginame='%user%'"
+echo Creating user...
+%sql% -Q "EXEC sp_addlogin @loginame='%user%', @passwd='%password%', @defdb='%cms_db%'"
+
+%sql% -d %cms_db% -Q "EXEC sp_dropuser '%user%'"
+%sql% -d %cms_db% -Q "EXEC sp_adduser @loginame='%user%'"
+%sql% -d %cms_db% -Q "EXEC sp_addrolemember N'db_owner', N'%user%'"
+
+%sql% -d %commerce_db% -Q "EXEC sp_dropuser '%user%'"
+%sql% -d %commerce_db% -Q "EXEC sp_adduser @loginame='%user%'"
+%sql% -d %commerce_db% -Q "EXEC sp_addrolemember N'db_owner', N'%user%'"
 
 :: Determine CMS package folders
 for /F " tokens=*" %%i in ('dir "..\Packages\EPiServer.CMS.Core*" /b /o:d') do (set cms_core=%%i) 
